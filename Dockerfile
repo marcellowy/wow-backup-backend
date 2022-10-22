@@ -11,5 +11,9 @@ RUN go build -v -o /usr/local/bin/app
 
 CMD ["app","-c","/usr/local/app-config/config.yaml"]
 
-# docker build -t wow-backup .
-# docker run -itd -p 31445:8080 -v /data/etc/wow-backup:/usr/local/app-config -v /var/log/wow-backup:/var/log --name wow-backup wow-backup
+# docker build --rm -t wow-backup .
+# docker run -itd -p 31445:8080 \
+# -v /data/etc/wow-backup:/usr/local/app-config \
+# -v /var/log/wow-backup:/var/log \
+# -v /data/wow-backup:/data
+# --name wow-backup wow-backup
