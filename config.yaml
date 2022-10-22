@@ -1,0 +1,13 @@
+listen: 0.0.0.0:8080
+mode: debug # debug, test, release
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: password
+  name: db_wow
+backup:
+  tmp_directory: ./part # 备份临时目录,存储过程文件 结尾不要加 '/'
+  save_directory: . # 备份保存目录,结尾不要加 '/'
+log:
+  directory: . # 日志保存目录, 结尾不要加 '/'
