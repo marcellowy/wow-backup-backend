@@ -27,9 +27,17 @@ func mergePart(ctx *gin.Context, tmpDirectory, hash string, total int) (string, 
 		file      = fmt.Sprintf("%s/%s.7z", directory, hash)
 		b         []byte
 		newHash   string
+		err       error
+		fd        *os.File
 	)
 
-	fd, err := os.OpenFile(file, os.O_CREATE|os.O_TRUNC|os.O_RDWR|os.O_APPEND, 0755)
+	// 尝试创建目录
+	if err = common.CreateDirectory(directory); err != nil {
+		log.Error(ctx, err.Error())
+		return "", newHash, fmt.Errorf("创建目录失败")
+	}
+
+	fd, err = os.OpenFile(file, os.O_CREATE|os.O_TRUNC|os.O_RDWR|os.O_APPEND, 0755)
 	if err != nil {
 		log.Error(ctx, err.Error())
 		return "", newHash, fmt.Errorf("创建文件失败")

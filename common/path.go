@@ -4,7 +4,10 @@
 
 package common
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 // PathExists 判断所给路径文件/文件夹是否存在
 func PathExists(path string) (bool, error) {
@@ -17,4 +20,28 @@ func PathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err //如果有错误了，但是不是不存在的错误，所以把这个错误原封不动的返回
+}
+
+// CreateDirectory 创建目录
+func CreateDirectory(path string) error {
+
+	var (
+		ok  bool
+		err error
+	)
+
+	if ok, err = PathExists(path); ok && err == nil {
+		// 目录存在
+		return nil
+	} else if !ok && err == nil {
+		// 文件不存在
+		if err = os.MkdirAll(path, 0755); err != nil {
+			return fmt.Errorf("创建目录失败" + err.Error())
+		}
+		return nil
+	} else if !ok && err != nil {
+		// 判断时出现了系统错误
+		return err
+	}
+	return nil
 }
