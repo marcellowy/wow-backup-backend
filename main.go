@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/marcellowy/wow-backup-backend/log"
+
 	"github.com/marcellowy/wow-backup-backend/config"
 	"github.com/marcellowy/wow-backup-backend/router"
 
@@ -45,6 +47,15 @@ func connectMySQL() {
 	}
 }
 
+func initLog() {
+	var path = config.Viper.GetString("log.directory")
+	log.InitLog(log.NewConfig(func(config *log.Config) {
+		if path != "" {
+			config.Filename = path + "/" + config.Filename
+		}
+	}))
+}
+
 func init() {
 	flag.StringVar(&config.File, "c", "", "指定启动配置文件")
 	flag.Parse()
@@ -56,6 +67,8 @@ func init() {
 }
 
 func main() {
+	// initLog中使用了init作初始化,由于init没有顺序,所以初始化日志要放在main方法
+	initLog()
 	gin.SetMode(config.Viper.GetString("mode"))
 	engin := gin.Default()
 	router.Router(engin)
