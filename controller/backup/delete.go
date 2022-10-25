@@ -59,11 +59,27 @@ func Delete(ctx *gin.Context) {
 		return
 	}
 
-	// 删除文件
-	if err = os.Remove(backup.RealPath); err != nil {
-		// 删除文件不做强制判断,应该需要独立的线程去完成数据库数据与实际文件的对应校验
-		log.Warn(ctx, err.Error())
+	// 检查是不是还有关联到这个hash文件的记录
+	// TODO: 有条件可以做成异步处理
+	var (
+		list       []*model.Backup
+		deleteFlag = true // 默认可以删除
+	)
+	if list, err = dao.NewBackup().QueryListByUserID(config.Db, backup.UserID); err != nil {
+		for _, val := range list {
+			if val.BackupID != backup.BackupID && val.Hash == backup.Hash {
+				// 不能删除
+				deleteFlag = false
+			}
+		}
 	}
 
+	// 删除文件
+	if deleteFlag {
+		if err = os.Remove(backup.RealPath); err != nil {
+			// 删除文件不做强制判断,应该需要独立的线程去完成数据库数据与实际文件的对应校验
+			log.Warn(ctx, err.Error())
+		}
+	}
 	common.ResponseSuccess(ctx)
 }

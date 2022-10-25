@@ -27,7 +27,7 @@ func (*Backup) QueryListByUserID(db *gorm.DB, userID string) ([]*model.Backup, e
 	var data []*model.Backup
 	var err = db.Find(&data, map[string]interface{}{
 		"user_id": userID,
-	}).Error
+	}).Order("created_at DESC").Error
 	return data, err
 }
 
